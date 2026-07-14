@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Code 作品展览</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="bg-particles" id="particles"></div>
+
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <div class="logo">✦ Vibe Code</div>
+            <ul class="nav-links">
+                <li><a href="#gallery">作品展览</a></li>
+                <li><a href="#timeline">展览日程</a></li>
+                <li><a href="#about">关于展览</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">🎨 2026 年度展览</div>
+        <h1>Vibe Code<br>创意作品展</h1>
+        <p>这里展示我用心打造的代码作品。每一行代码，都是一种表达。</p>
+        <div class="hero-cta">
+            <a href="#gallery" class="btn btn-primary">探索作品</a>
+            <a href="#about" class="btn btn-outline">了解更多</a>
+        </div>
+    </section>
+
+    <section class="section" id="gallery">
+        <div class="section-header reveal">
+            <div class="section-label">Gallery</div>
+            <h2 class="section-title">精选作品</h2>
+            <p class="section-desc">探索我用心打造的精彩作品，感受代码与艺术的交汇。</p>
+        </div>
+
+        <div class="filter-bar reveal" id="filterBar">
+            <button class="filter-tag active" data-filter="all">全部</button>
+            <button class="filter-tag" data-filter="web">Web 开发</button>
+            <button class="filter-tag" data-filter="ai">AI 应用</button>
+            <button class="filter-tag" data-filter="tool">工具</button>
+            <button class="filter-tag" data-filter="game">游戏</button>
+        </div>
+
+        <div class="gallery" id="galleryGrid"></div>
+    </section>
+
+    <section class="section" id="timeline">
+        <div class="section-header reveal">
+            <div class="section-label">Timeline</div>
+            <h2 class="section-title">展览日程</h2>
+            <p class="section-desc">从构思到完成，每一步都充满期待。</p>
+        </div>
+
+        <div class="timeline reveal">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2026 年 6 月</div>
+                <h3>灵感萌芽</h3>
+                <p>萌生创作想法，开始构思最具创意与美感的代码作品。</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2026 年 8 月</div>
+                <h3>打磨阶段</h3>
+                <p>对所有作品进行细致打磨与优化，追求每一个细节的完美。</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2026 年 10 月</div>
+                <h3>线上预展</h3>
+                <p>作品在线上平台首次亮相，开放公众浏览与互动。</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2026 年 12 月</div>
+                <h3>正式展览开幕</h3>
+                <p>所有作品正式展出，同步举办线上直播与分享活动。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="about">
+        <div class="section-header reveal">
+            <div class="section-label">About</div>
+            <h2 class="section-title">关于展览</h2>
+            <p class="section-desc">Vibe Code 是我的个人作品展览，记录我的代码与创意之旅。</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>Made with <span class="heart">❤</span> by Me · 2026</p>
+    </footer>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <button class="modal-close" id="modalClose">✕</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
