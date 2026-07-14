@@ -17,7 +17,7 @@ function renderGallery(filter) {
     var filtered = filter === 'all' ? works : works.filter(function(w) { return w.category === filter; });
 
     grid.innerHTML = filtered.map(function(w, i) {
-        return '<div class="card reveal" style="animation-delay: ' + (i * 0.08) + 's" data-id="' + w.id + '">' +
+        return '<div class="card" style="animation-delay: ' + (i * 0.08) + 's" data-id="' + w.id + '">' +
             '<div class="card-image" style="background: ' + w.gradient + '">' +
                 '<img class="img-bg" src="' + w.avatar + '" alt="' + w.title + '">' +
                 '<span class="card-tag">' + getCategoryLabel(w.category) + '</span>' +
@@ -34,15 +34,20 @@ function renderGallery(filter) {
             var id = parseInt(this.dataset.id);
             openModal(id);
         });
-    });
 
-    setTimeout(function() {
-        document.querySelectorAll('.reveal').forEach(function(el) {
-            if (el.getBoundingClientRect().top < window.innerHeight - 50) {
-                el.classList.add('visible');
-            }
+        card.addEventListener('mousemove', function(e) {
+            var rect = card.getBoundingClientRect();
+            var xRatio = (e.clientX - rect.left) / rect.width;
+            var yRatio = (e.clientY - rect.top) / rect.height;
+            var rotateY = (xRatio - 0.5) * 20;
+            var rotateX = (0.5 - yRatio) * 15;
+            card.style.transform = 'perspective(1200px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateZ(20px)';
         });
-    }, 100);
+
+        card.addEventListener('mouseleave', function() {
+            card.style.transform = 'none';
+        });
+    });
 }
 
 function getCategoryLabel(cat) {
@@ -116,19 +121,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Escape') closeModal();
     });
 
-    document.getElementById('filterBar').addEventListener('click', function(e) {
-        if (!e.target.classList.contains('filter-tag')) return;
-        this.querySelectorAll('.filter-tag').forEach(function(t) { t.classList.remove('active'); });
-        e.target.classList.add('active');
-        renderGallery(e.target.dataset.filter);
-    });
-
     window.addEventListener('scroll', function() {
         var navbar = document.querySelector('.navbar');
         if (window.scrollY > 10) {
-            navbar.style.boxShadow = '0 4px 30px rgba(42, 124, 140, 0.15)';
+            navbar.classList.add('scrolled');
         } else {
-            navbar.style.boxShadow = 'none';
+            navbar.classList.remove('scrolled');
         }
     });
 });
