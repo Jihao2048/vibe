@@ -484,6 +484,44 @@ body {
     box-sizing: border-box;
 }
 
+.modal-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.modal-links .modal-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 0.9rem;
+    border-radius: 12px;
+    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.modal-links .modal-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(42, 124, 140, 0.45);
+    filter: brightness(1.08);
+}
+
+.modal-links .modal-link:nth-child(odd):last-child {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 560px) {
+    .modal-links {
+        grid-template-columns: 1fr;
+    }
+    .modal-links .modal-link:nth-child(odd):last-child {
+        grid-column: auto;
+    }
+}
+
 @media (max-width: 768px) {
     .hero h1 {
         font-size: 2.2rem;

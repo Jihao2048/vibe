@@ -9,6 +9,22 @@ const works = [
         avatar: 'avatars/scientificnotation.png',
         link: 'scientificnotation.html',
     },
+    {
+        id: 2,
+        title: 'Google Material风格小工具系列',
+        category: 'web',
+        desc: '一组实用的在线小工具集合，包含颜色选择器、闲鱼税计算、数字转换等工具。以及标题生成器、扫雷等小游戏。',
+        fullDesc: 'Material 小工具系列，收录了多个日常实用的小工具，点击下方任意按钮即可跳转到对应页面体验。',
+        gradient: 'linear-gradient(135deg, #3d2a5c, #5c3d6e)',
+        avatar: 'avatars/materials.png',
+        links: [
+            { name: '颜色选择器', url: 'material小工具系列/colorpicker.html' },
+            { name: '闲鱼税计算', url: 'material小工具系列/goofishtax.html' },
+            { name: '扫雷', url: 'material小工具系列/minesweeper.html' },
+            { name: '数字转换', url: 'material小工具系列/numconvert.html' },
+            { name: '标题生成器', url: 'material小工具系列/titlegenerator.html' },
+        ],
+    },
 ];
 
 function renderGallery(filter) {
@@ -60,6 +76,16 @@ function openModal(id) {
     if (!w) return;
     var overlay = document.getElementById('modalOverlay');
     var content = document.getElementById('modalContent');
+
+    var linkHtml;
+    if (w.links && w.links.length) {
+        linkHtml = '<div class="modal-links">' + w.links.map(function(l) {
+            return '<a class="btn btn-primary modal-link" href="' + l.url + '" target="_blank" rel="noopener noreferrer">' + l.name + ' →</a>';
+        }).join('') + '</div>';
+    } else {
+        linkHtml = '<a class="btn btn-primary modal-link" href="' + (w.link || '#') + '" target="_blank" rel="noopener noreferrer">跳转 →</a>';
+    }
+
     content.innerHTML =
         '<div style="background: ' + w.gradient + '; height: 200px; border-radius: 12px; margin-bottom: 20px; overflow: hidden;">' +
             '<img src="' + w.avatar + '" alt="' + w.title + '" style="width: 100%; height: 100%; object-fit: cover; display: block;">' +
@@ -67,7 +93,7 @@ function openModal(id) {
         '<span class="modal-tag">' + getCategoryLabel(w.category) + '</span>' +
         '<h2>' + w.title + '</h2>' +
         '<p class="modal-desc">' + w.fullDesc + '</p>' +
-        '<a class="btn btn-primary modal-link" href="' + (w.link || '#') + '" target="_blank" rel="noopener noreferrer">跳转 →</a>';
+        linkHtml;
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
 }

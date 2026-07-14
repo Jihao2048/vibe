@@ -1,0 +1,240 @@
+:root {
+    --primary-color: #4285F4;
+    --error-color: #EA4335;
+    --success-color: #34A853;
+    --warning-color: #FBBC05;
+    --text-color: #202124;
+    --secondary-text: #5F6368;
+    --border-color: #DADCE0;
+    --background-color: #FFFFFF;
+    --card-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);
+    --input-focus-shadow: 0 0 0 2px rgba(66,133,244,0.3);
+}
+
+body {
+    font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+    background-color: #F8F9FA;
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.5;
+}
+
+.card {
+    background-color: var(--background-color);
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    padding: 24px;
+    max-width: 500px;
+    max-height: 90vh;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+h1 {
+    color: var(--text-color);
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0 0 20px 0;
+    text-align: center;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--secondary-text);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.input-field, .text-input, .rgb-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus, .text-input:focus, .rgb-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: var(--input-focus-shadow);
+}
+
+.rgb-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.rgb-inputs > div {
+    flex: 1;
+}
+
+.btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    background-color: #3367D6;
+    box-shadow: 0 1px 2px 0 rgba(66,133,244,0.3);
+}
+
+.btn:active {
+    background-color: #2A56C6;
+}
+
+#error {
+    color: var(--error-color);
+    font-size: 13px;
+    margin: 10px 0;
+    min-height: 20px;
+}
+
+.result {
+    margin-top: 24px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 16px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.result-label {
+    color: var(--secondary-text);
+}
+
+.result-value {
+    font-weight: 500;
+}
+
+.highlight {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.note {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+    font-size: 13px;
+    color: var(--secondary-text);
+}
+
+.note p {
+    margin: 8px 0;
+}
+
+/* 颜色选择器特定样式 */
+.color-preview {
+    width: 100%;
+    height: 80px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+input[type="color"] {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+input[type="radio"] {
+    margin-right: 8px;
+}
+
+/* 调整主容器 */
+.main-container {
+    max-width: 1200px;
+    width: 100%;
+    padding: 20px;
+}
+
+@media (max-width: 600px) {
+    .card {
+        padding: 16px;
+    }
+    
+    h1 {
+        font-size: 20px;
+    }
+}
+
+/* 预设颜色区域样式 */
+.preset-colors {
+    margin: 20px 0;
+}
+
+.preset-colors h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+.color-group {
+    margin-bottom: 15px;
+}
+
+.color-group h4 {
+    margin: 10px 0 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+.color-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;  /* 缩小间距 */
+    cursor: pointer;
+    padding: 2px;  /* 缩小内边距 */
+    border-radius: 4px;
+}
+
+.preset-color {
+    width: 30px;  /* 缩小宽度 */
+    height: 30px;  /* 缩小高度 */
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.color-label {
+    font-size: 12px;  /* 缩小字体 */
+    color: var(--secondary-text);
+    white-space: nowrap;
+}
+
+.preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));  /* 调整最小宽度 */
+    gap: 8px;  /* 缩小间距 */
+}
+
+.preset-color:hover {
+    background-color: rgba(0,0,0,0.05);
+}
