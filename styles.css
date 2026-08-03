@@ -532,7 +532,7 @@ body {
     .gallery {
         grid-template-columns: 1fr;
     }
-    .nav-links {
+    .navbar {
         display: none;
     }
 }
