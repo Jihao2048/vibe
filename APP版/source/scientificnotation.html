@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科学计数法 → 完整数字 · 复制/下载</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f0f5fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .card {
+            background: white;
+            border-radius: 40px;
+            padding: 2.5rem 2.8rem;
+            max-width: 720px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,20,40,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        h1 {
+            font-weight: 500;
+            font-size: 2rem;
+            color: #0b2a3b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.2rem;
+        }
+        h1 small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #3e5f72;
+            opacity: 0.8;
+        }
+        .subhead {
+            color: #2c4b5e;
+            margin-bottom: 2rem;
+            padding-left: 1rem;
+            border-left: 4px solid #3d8c9e;
+            background: rgba(61,140,158,0.05);
+            border-radius: 0 12px 12px 0;
+            padding: 0.4rem 1rem;
+        }
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem 1.8rem;
+            margin-bottom: 2rem;
+        }
+        .field {
+            flex: 1 1 150px;
+            min-width: 120px;
+        }
+        .field label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #1d4a5e;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.2rem;
+        }
+        .field input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            font-size: 1.1rem;
+            border: 1.5px solid #cbdae3;
+            border-radius: 24px;
+            background: white;
+            font-family: 'JetBrains Mono', monospace;
+            color: #0a1e2b;
+            font-weight: 500;
+            outline: none;
+            transition: 0.15s;
+        }
+        .field input:focus {
+            border-color: #2d7f94;
+            box-shadow: 0 0 0 4px rgba(45,127,148,0.12);
+        }
+        .hint {
+            font-size: 0.7rem;
+            color: #3e6a7c;
+            margin-top: 0.2rem;
+            padding-left: 0.4rem;
+            opacity: 0.7;
+        }
+        .result-box {
+            background: #eaf1f7;
+            border-radius: 28px;
+            padding: 1.2rem 1.8rem;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #1b4a5c;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+        .result-number {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #022b3b;
+            word-break: break-all;
+            line-height: 1.4;
+            min-height: 3.5rem;
+            background: rgba(255,255,255,0.3);
+            border-radius: 16px;
+            padding: 0.4rem 1rem;
+            cursor: default;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+        }
+        .result-number .placeholder {
+            opacity: 0.35;
+            font-weight: 300;
+            font-size: 1.2rem;
+        }
+        .result-number.clickable-copy {
+            cursor: pointer;
+            background: rgba(29, 74, 94, 0.08);
+            border: 2px dashed #1d4a5e;
+            color: #1d4a5e;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.6rem;
+            letter-spacing: 0.04em;
+        }
+        .result-number.clickable-copy:hover {
+            background: rgba(29, 74, 94, 0.15);
+            transform: scale(1.01);
+        }
+        .result-number.clickable-download {
+            cursor: pointer;
+            background: rgba(31, 109, 94, 0.1);
+            border: 2px solid #1f6d5e;
+            color: #1f6d5e;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.6rem;
+            letter-spacing: 0.04em;
+        }
+        .result-number.clickable-download:hover {
+            background: rgba(31, 109, 94, 0.18);
+            transform: scale(1.01);
+        }
+        .error-msg {
+            color: #b13e4b;
+            background: rgba(190,50,60,0.07);
+            border-radius: 40px;
+            padding: 0.3rem 1.2rem;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-top: 0.4rem;
+            border-left: 3px solid #b13e4b;
+        }
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.5rem;
+            margin-top: 1.2rem;
+        }
+        .btn {
+            background: #1d4a5e;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.6rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 4px 8px rgba(0,20,30,0.1);
+        }
+        .btn:hover {
+            background: #123a4b;
+            transform: scale(1.01);
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            filter: grayscale(0.3);
+        }
+        .btn-copy {
+            background: #2d7f94;
+        }
+        .btn-copy:hover {
+            background: #1f6a7c;
+        }
+        .btn-download {
+            background: #1f6d5e;
+        }
+        .btn-download:hover {
+            background: #15584b;
+        }
+        .file-hint {
+            font-size: 0.8rem;
+            color: #2f5d6b;
+            background: rgba(45,127,148,0.08);
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1d4a5e;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 999;
+            font-weight: 500;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .footnote {
+            margin-top: 1.6rem;
+            font-size: 0.75rem;
+            color: #3d6377;
+            text-align: right;
+            border-top: 1px solid rgba(80,120,140,0.12);
+            padding-top: 0.8rem;
+            opacity: 0.6;
+        }
+        @media (max-width: 480px) {
+            .card { padding: 1.5rem; }
+            .result-number { font-size: 1.1rem; }
+            .result-number.clickable-copy,
+            .result-number.clickable-download { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>
+        🔬 科学计数法
+        <small>→ 完整数字</small>
+    </h1>
+    <div class="subhead">
+        ⚡ 底数 &lt; 10 &nbsp;·&nbsp; 指数任意整数 &nbsp;·&nbsp; 20位复制 · 50位下载
+    </div>
+
+    <div class="input-group">
+        <div class="field">
+            <label for="mantissa">底数 (a)</label>
+            <input type="text" id="mantissa" inputmode="decimal" placeholder="例 3.14" value="8.5">
+            <div class="hint">浮点数或整数，|a| &lt; 10</div>
+        </div>
+        <div class="field">
+            <label for="exponent">指数 (n)</label>
+            <input type="text" id="exponent" inputmode="numeric" placeholder="例 200" value="200">
+            <div class="hint">正整数 / 负整数 / 零</div>
+        </div>
+    </div>
+
+    <div class="result-box">
+        <div class="result-header">
+            <span>📐 转换结果</span>
+            <span style="font-size:0.7rem;">a × 10ⁿ</span>
+        </div>
+        <div id="resultDisplay" class="result-number">
+            <span class="placeholder">等待输入…</span>
+        </div>
+        <div id="errorDisplay" class="error-msg" style="display: none;"></div>
+
+        <div class="action-bar">
+            <button id="copyBtn" class="btn btn-copy" disabled>
+                📋 复制
+            </button>
+            <button id="downloadBtn" class="btn btn-download" disabled>
+                ⬇️ 下载 TXT
+            </button>
+            <span id="fileSizeHint" class="file-hint">20位可复制 · 50位可下载</span>
+            <span style="margin-left:auto; font-size:0.75rem; color:#3a6579;" id="digitCount">位数: 0</span>
+        </div>
+    </div>
+    <div class="footnote">
+        <span>⚙️ 机器不会累 · 浮点数自动转整数精确计算</span>
+    </div>
+</div>
+
+<!-- Toast 提示 -->
+<div id="toast" class="toast"></div>
+
+<script>
+    (function() {
+        const mantissaInput = document.getElementById('mantissa');
+        const exponentInput = document.getElementById('exponent');
+        const resultDisplay = document.getElementById('resultDisplay');
+        const errorDisplay = document.getElementById('errorDisplay');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const digitCountSpan = document.getElementById('digitCount');
+        const fileSizeHint = document.getElementById('fileSizeHint');
+        const toast = document.getElementById('toast');
+
+        let currentFullNumber = '';
+        let hasError = false;
+        let currentMode = 'none'; // 'copy' | 'download' | 'none'
+
+        let toastTimer = null;
+
+        function showToast(msg, duration = 2000) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // ---------- 将浮点数转为整数 ----------
+        function floatToInteger(val) {
+            if (Number.isInteger(val)) {
+                return { intPart: BigInt(val), scale: 0 };
+            }
+            const str = val.toString();
+            if (str.includes('e')) {
+                const num = Number(val);
+                if (Number.isInteger(num)) {
+                    return { intPart: BigInt(num), scale: 0 };
+                }
+                const fixed = num.toFixed(15).replace(/\.?0+$/, '');
+                return floatToIntegerFromString(fixed);
+            }
+            return floatToIntegerFromString(str);
+        }
+
+        function floatToIntegerFromString(str) {
+            const parts = str.split('.');
+            if (parts.length === 1) {
+                return { intPart: BigInt(parts[0]), scale: 0 };
+            }
+            const intPart = parts[0];
+            const fracPart = parts[1];
+            const scale = fracPart.length;
+            const combined = intPart + fracPart;
+            const trimmed = combined.replace(/^0+/, '') || '0';
+            return { intPart: BigInt(trimmed), scale: scale };
+        }
+
+        // ---------- 核心计算 ----------
+        function computeScientific(mantissaStr, exponentStr) {
+            if (mantissaStr.trim() === '' && exponentStr.trim() === '') {
+                return { value: null, error: null };
+            }
+            if (mantissaStr.trim() === '') {
+                return { value: null, error: '请输入底数' };
+            }
+            if (exponentStr.trim() === '') {
+                return { value: null, error: '请输入指数' };
+            }
+
+            const mantissa = parseFloat(mantissaStr);
+            if (isNaN(mantissa)) {
+                return { value: null, error: '底数必须是有效数字' };
+            }
+            if (Math.abs(mantissa) >= 10) {
+                return { value: null, error: '底数绝对值必须 < 10' };
+            }
+
+            const expRaw = exponentStr.trim();
+            if (!/^-?\d+$/.test(expRaw)) {
+                return { value: null, error: '指数必须是整数 (例如 5, -3, 0)' };
+            }
+            const exponent = parseInt(expRaw, 10);
+            if (isNaN(exponent)) {
+                return { value: null, error: '指数无效' };
+            }
+
+            try {
+                const { intPart, scale } = floatToInteger(mantissa);
+                const adjustedExp = exponent - scale;
+
+                if (adjustedExp >= 0) {
+                    const tenBig = BigInt(10);
+                    const expBig = BigInt(adjustedExp);
+                    const factor = tenBig ** expBig;
+                    const full = intPart * factor;
+                    return { value: full.toString(), error: null, isScientific: false };
+                } else {
+                    const divisorExp = -adjustedExp;
+                    const tenBig = BigInt(10);
+                    const divisor = tenBig ** BigInt(divisorExp);
+                    const keep = Math.min(divisorExp + 10, 30);
+                    const multiplier = tenBig ** BigInt(keep);
+                    const scaled = intPart * multiplier;
+                    const quotient = scaled / divisor;
+                    const remainder = scaled % divisor;
+                    let fracStr = '';
+                    if (remainder !== 0n) {
+                        const half = divisor / 2n;
+                        let rounded = quotient;
+                        if (remainder >= half) {
+                            rounded = quotient + 1n;
+                        }
+                        const roundedStr = rounded.toString();
+                        if (roundedStr.length <= keep) {
+                            fracStr = roundedStr.padStart(keep, '0');
+                        } else {
+                            fracStr = roundedStr.slice(1);
+                        }
+                    } else {
+                        fracStr = quotient.toString().padStart(keep, '0');
+                    }
+                    fracStr = fracStr.replace(/0+$/, '');
+                    const intResult = (quotient / multiplier).toString();
+                    if (fracStr === '' || fracStr === '0') {
+                        return { value: intResult, error: null, isScientific: false };
+                    } else {
+                        return { value: `${intResult}.${fracStr}`, error: null, isScientific: false };
+                    }
+                }
+            } catch (e) {
+                return { value: null, error: '计算异常: ' + e.message };
+            }
+        }
+
+        // ---------- 复制到剪贴板 ----------
+        function copyToClipboard() {
+            if (!currentFullNumber || hasError) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(currentFullNumber).then(() => {
+                    showToast('✅ 已复制到剪贴板！');
+                }).catch(() => {
+                    fallbackCopy();
+                });
+            } else {
+                fallbackCopy();
+            }
+        }
+
+        function fallbackCopy() {
+            const textarea = document.createElement('textarea');
+            textarea.value = currentFullNumber;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('✅ 已复制到剪贴板！');
+            } catch (e) {
+                showToast('❌ 复制失败，请手动选择复制');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // ---------- 下载 TXT ----------
+        function downloadTXT() {
+            if (!currentFullNumber || hasError) return;
+            const mantissaRaw = mantissaInput.value.trim() || 'a';
+            const exponentRaw = exponentInput.value.trim() || 'n';
+            const filename = `scientific_${mantissaRaw}_e${exponentRaw}.txt`;
+            const content = currentFullNumber;
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('✅ 下载已开始！');
+        }
+
+        // ---------- 点击结果区域 ----------
+        function handleResultClick() {
+            if (hasError || !currentFullNumber) return;
+            if (currentMode === 'copy') {
+                copyToClipboard();
+            } else if (currentMode === 'download') {
+                downloadTXT();
+            }
+        }
+
+        // ---------- 更新界面 ----------
+        function updateDisplay() {
+            const mantissaVal = mantissaInput.value;
+            const exponentVal = exponentInput.value;
+
+            const result = computeScientific(mantissaVal, exponentVal);
+
+            errorDisplay.style.display = 'none';
+            errorDisplay.textContent = '';
+            hasError = false;
+            copyBtn.disabled = true;
+            downloadBtn.disabled = true;
+            currentFullNumber = '';
+            currentMode = 'none';
+            resultDisplay.classList.remove('clickable-copy', 'clickable-download');
+            resultDisplay.style.cursor = 'default';
+
+            if (result.error) {
+                errorDisplay.textContent = result.error;
+                errorDisplay.style.display = 'inline-block';
+                resultDisplay.innerHTML = `<span style="opacity:0.4;">—</span>`;
+                digitCountSpan.textContent = '位数: 0';
+                fileSizeHint.textContent = '输入有误';
+                fileSizeHint.style.color = '#b13e4b';
+                hasError = true;
+                return;
+            }
+
+            if (result.value === null || result.value === undefined) {
+                resultDisplay.innerHTML = `<span class="placeholder">等待输入…</span>`;
+                digitCountSpan.textContent = '位数: 0';
+                fileSizeHint.textContent = '等待输入';
+                fileSizeHint.style.color = '#2f5d6b';
+                return;
+            }
+
+            const displayVal = result.value;
+            currentFullNumber = displayVal;
+
+            const digitOnly = displayVal.replace(/[^0-9]/g, '');
+            const digitLen = digitOnly.length;
+            digitCountSpan.textContent = `位数: ${digitLen}`;
+
+            const isScientificNotation = result.isScientific || displayVal.includes('×') || displayVal.includes('10^');
+
+            // 根据位数决定模式
+            if (!isScientificNotation && !hasError) {
+                if (digitLen > 50) {
+                    // 下载模式
+                    currentMode = 'download';
+                    resultDisplay.innerHTML = `<span>⬇️ 点击下载 TXT</span>`;
+                    resultDisplay.classList.add('clickable-download');
+                    resultDisplay.style.cursor = 'pointer';
+                    copyBtn.disabled = true;
+                    downloadBtn.disabled = false;
+                    fileSizeHint.textContent = `📦 超过50位，点击下载TXT`;
+                    fileSizeHint.style.color = '#1f6d5e';
+                } else if (digitLen > 20) {
+                    // 复制模式
+                    currentMode = 'copy';
+                    resultDisplay.innerHTML = `<span>📋 点击复制</span>`;
+                    resultDisplay.classList.add('clickable-copy');
+                    resultDisplay.style.cursor = 'pointer';
+                    copyBtn.disabled = false;
+                    downloadBtn.disabled = true;
+                    fileSizeHint.textContent = `📋 超过20位，点击复制`;
+                    fileSizeHint.style.color = '#2d7f94';
+                } else {
+                    // 正常显示
+                    currentMode = 'none';
+                    resultDisplay.innerHTML = displayVal;
+                    resultDisplay.classList.remove('clickable-copy', 'clickable-download');
+                    resultDisplay.style.cursor = 'default';
+                    copyBtn.disabled = true;
+                    downloadBtn.disabled = true;
+                    fileSizeHint.textContent = `位数 ≤ 20，直接显示`;
+                    fileSizeHint.style.color = '#2f5d6b';
+                }
+            } else {
+                // 科学计数法表示，无法处理
+                currentMode = 'none';
+                resultDisplay.innerHTML = displayVal;
+                resultDisplay.classList.remove('clickable-copy', 'clickable-download');
+                resultDisplay.style.cursor = 'default';
+                copyBtn.disabled = true;
+                downloadBtn.disabled = true;
+                fileSizeHint.textContent = `⚠️ 科学计数法表示，无法转换`;
+                fileSizeHint.style.color = '#b13e4b';
+            }
+        }
+
+        // ---------- 事件绑定 ----------
+        mantissaInput.addEventListener('input', updateDisplay);
+        exponentInput.addEventListener('input', updateDisplay);
+        copyBtn.addEventListener('click', copyToClipboard);
+        downloadBtn.addEventListener('click', downloadTXT);
+        resultDisplay.addEventListener('click', handleResultClick);
+
+        mantissaInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); exponentInput.focus(); }
+        });
+        exponentInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); updateDisplay(); }
+        });
+
+        [mantissaInput, exponentInput].forEach(inp => {
+            inp.addEventListener('blur', function() {
+                this.value = this.value.trim();
+                updateDisplay();
+            });
+        });
+
+        updateDisplay();
+    })();
+</script>
+</body>
+</html>
