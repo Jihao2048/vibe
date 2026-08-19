@@ -23,7 +23,7 @@
                 <span class="result-value" id="original-price">0.00 元</span>
             </div>
             <div class="result-item">
-                <span class="result-label">闲鱼税费 (0.6%)</span>
+                <span class="result-label">闲鱼税费 (1.6%)</span>
                 <span class="result-value" id="tax">0.00 元</span>
             </div>
             <div class="result-item">
@@ -37,8 +37,8 @@
         </div>
         
         <div class="note">
-            <p><strong>闲鱼收费规则：</strong>按单笔订单成交金额（含运费）的0.6%向卖方收取服务费，上不封顶。</p>
-            <p><strong>推荐定价说明：</strong>推荐定价=原价/(1-0.6%)，可确保扣除手续费后实际到手金额等于原价。</p>
+            <p><strong>闲鱼收费规则：</strong>按单笔订单成交金额（含运费）的1.6%向卖方收取服务费，上不封顶。</p>
+            <p><strong>推荐定价说明：</strong>推荐定价=原价/(1-1.6%)，可确保扣除手续费后实际到手金额等于原价。</p>
         </div>
     </div>
 
@@ -60,15 +60,15 @@
             
             errorElement.textContent = '';
             
-            // 计算税费（0.6%，上不封顶）
-            let tax = price * 0.006;
+            // 计算税费（1.6%，上不封顶）
+            let tax = price * 0.016;
             tax = Math.round(tax * 100) / 100;
             
             // 计算实际到手金额
             const actualAmount = price - tax;
             
             // 计算推荐定价（确保扣除手续费后等于原价）
-            let suggestedPrice = price / (1 - 0.006);
+            let suggestedPrice = price / (1 - 0.016);
             suggestedPrice = Math.round(suggestedPrice * 100) / 100;
             
             // 显示结果
