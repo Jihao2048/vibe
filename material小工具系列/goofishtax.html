@@ -11,24 +11,36 @@
         <h1>闲鱼税计算器</h1>
         
         <div class="input-group">
-            <label for="price">商品价格（含运费）</label>
-            <input type="number" id="price" placeholder="输入金额（元）" class="input-field">
+            <label for="price">商品价格</label>
+            <input type="number" id="price" placeholder="输入商品价格（元）" class="input-field">
+        </div>
+        <div class="input-group">
+            <label for="shipping">运费</label>
+            <input type="number" id="shipping" placeholder="输入运费（元），无则填0" class="input-field" value="0">
         </div>
         <button onclick="calculateTax()" class="btn">计算税费</button>
         <div id="error"></div>
         
         <div class="result" id="result" style="display: none;">
             <div class="result-item">
-                <span class="result-label">商品原价</span>
+                <span class="result-label">商品价格</span>
                 <span class="result-value" id="original-price">0.00 元</span>
             </div>
             <div class="result-item">
-                <span class="result-label">闲鱼税费 (1.6%)</span>
+                <span class="result-label">运费</span>
+                <span class="result-value" id="shipping-display">0.00 元</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">成交总价</span>
+                <span class="result-value" id="total-price">0.00 元</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">闲鱼服务费 (1.6%)</span>
                 <span class="result-value" id="tax">0.00 元</span>
             </div>
             <div class="result-item">
                 <span class="result-label">实际到手</span>
-                <span class="result-value" id="actual-amount">0.00 元</span>
+                <span class="result-value highlight" id="actual-amount">0.00 元</span>
             </div>
             <div class="result-item">
                 <span class="result-label">推荐定价</span>
@@ -37,42 +49,57 @@
         </div>
         
         <div class="note">
-            <p><strong>闲鱼收费规则：</strong>按单笔订单成交金额（含运费）的1.6%向卖方收取服务费，上不封顶。</p>
-            <p><strong>推荐定价说明：</strong>推荐定价=原价/(1-1.6%)，可确保扣除手续费后实际到手金额等于原价。</p>
+            <p><strong>闲鱼收费规则：</strong>按单笔订单成交金额（商品价格+运费）的1.6%向卖方收取服务费，上不封顶。</p>
+            <p><strong>实际到手说明：</strong>实际到手 = 商品价格 − 服务费。运费是付给快递的成本，不计入到手收入。</p>
+            <p><strong>推荐定价说明：</strong>推荐定价已考虑运费影响，确保扣除服务费后实际到手金额等于你输入的商品价格。</p>
         </div>
     </div>
 
     <script>
         function calculateTax() {
             const priceInput = document.getElementById('price');
+            const shippingInput = document.getElementById('shipping');
             const errorElement = document.getElementById('error');
             const resultElement = document.getElementById('result');
             
-            // 获取输入价格
+            // 获取输入价格和运费
             const price = parseFloat(priceInput.value);
+            const shipping = parseFloat(shippingInput.value) || 0;
             
             // 验证输入
             if (isNaN(price) || price <= 0) {
-                errorElement.textContent = '请输入有效的金额';
+                errorElement.textContent = '请输入有效的商品价格';
+                resultElement.style.display = 'none';
+                return;
+            }
+            if (isNaN(shipping) || shipping < 0) {
+                errorElement.textContent = '请输入有效的运费（不小于0）';
                 resultElement.style.display = 'none';
                 return;
             }
             
             errorElement.textContent = '';
             
-            // 计算税费（1.6%，上不封顶）
-            let tax = price * 0.016;
+            // 成交总价 = 商品价格 + 运费
+            const totalPrice = price + shipping;
+            
+            // 计算服务费（按成交总价的1.6%，上不封顶）
+            let tax = totalPrice * 0.016;
             tax = Math.round(tax * 100) / 100;
             
-            // 计算实际到手金额
-            const actualAmount = price - tax;
+            // 实际到手 = 商品价格 - 服务费（运费是付给快递的成本）
+            const actualAmount = Math.round((price - tax) * 100) / 100;
             
-            // 计算推荐定价（确保扣除手续费后等于原价）
-            let suggestedPrice = price / (1 - 0.016);
+            // 推荐定价：确保扣除服务费后实际到手等于输入的商品价格
+            // 公式：price = suggestedPrice - (suggestedPrice + shipping) × 0.016
+            // 推导：suggestedPrice = (price + shipping × 0.016) / 0.984
+            let suggestedPrice = (price + shipping * 0.016) / 0.984;
             suggestedPrice = Math.round(suggestedPrice * 100) / 100;
             
             // 显示结果
             document.getElementById('original-price').textContent = price.toFixed(2) + ' 元';
+            document.getElementById('shipping-display').textContent = shipping.toFixed(2) + ' 元';
+            document.getElementById('total-price').textContent = totalPrice.toFixed(2) + ' 元';
             document.getElementById('tax').textContent = tax.toFixed(2) + ' 元';
             document.getElementById('actual-amount').textContent = actualAmount.toFixed(2) + ' 元';
             document.getElementById('suggested-price').textContent = suggestedPrice.toFixed(2) + ' 元';
@@ -82,6 +109,11 @@
         
         // 添加回车键支持
         document.getElementById('price').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateTax();
+            }
+        });
+        document.getElementById('shipping').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 calculateTax();
             }
