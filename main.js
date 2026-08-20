@@ -1,16 +1,26 @@
 const works = [
     {
         id: 1,
+        title: 'LaTeX公式生成器',
+        category: 'web',
+        desc: '把latex的图形玩出花来',
+        fullDesc: '你们不是喜欢和DeepSeek调情吗？客户端里面自带了latex图形渲染器，大家都想做出一个特别的聊天框来。今天让你们动动手指就能做出好看的消息框。',
+        gradient: 'linear-gradient(135deg, #1a3d44, #1a4f5a)',
+        avatar: 'avatars/latex.png',
+        link: 'https://latex.ias1054.cn',
+    },
+    {
+        id: 2,
         title: '科学计数法转完整数字',
         category: 'web',
         desc: '将科学计数法表示的数字转换为完整数字。',
         fullDesc: '科学计数法转完整数字工具，超过20位会提示复制到剪贴板，超过50位则生成txt文件并提示下载。',
         gradient: 'linear-gradient(135deg, #1a3d44, #1a4f5a)',
         avatar: 'avatars/scientificnotation.png',
-        link: 'scientificnotation.html',
+        link: '科学计数法/scientificnotation.html',
     },
     {
-        id: 2,
+        id: 3,
         title: 'Google Material风格小工具系列',
         category: 'web',
         desc: '一组实用的在线小工具集合，包含颜色选择器、闲鱼税计算、数字转换等工具。以及标题生成器、扫雷等小游戏。',
@@ -20,13 +30,11 @@ const works = [
         links: [
             { name: '颜色选择器', url: 'material小工具系列/colorpicker.html' },
             { name: '闲鱼税计算', url: 'material小工具系列/goofishtax.html' },
-            { name: '扫雷', url: 'material小工具系列/minesweeper.html' },
             { name: '数字转换', url: 'material小工具系列/numconvert.html' },
-            { name: '标题生成器', url: 'material小工具系列/titlegenerator.html' },
         ],
     },
     {
-        id: 3,
+        id: 4,
         title: 'Minecraft Verity模组的API包装工具',
         category: 'Python',
         desc: 'Verity是国外博主ThatMob视频中的原创角色，由爱好者将其制作成模组。通过这个工具可以让Verity模组调用国内ai平台。',
