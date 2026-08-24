@@ -5,7 +5,6 @@ const works = [
         category: 'web',
         desc: '把latex的图形玩出花来',
         fullDesc: '你们不是喜欢和DeepSeek调情吗？客户端里面自带了latex图形渲染器，大家都想做出一个特别的聊天框来。今天让你们动动手指就能做出好看的消息框。',
-        gradient: 'linear-gradient(135deg, #1a3d44, #1a4f5a)',
         avatar: 'avatars/latex.png',
         link: 'https://latex.ias1054.cn',
     },
@@ -15,9 +14,8 @@ const works = [
         category: 'web',
         desc: '将科学计数法表示的数字转换为完整数字。',
         fullDesc: '科学计数法转完整数字工具，超过20位会提示复制到剪贴板，超过50位则生成txt文件并提示下载。',
-        gradient: 'linear-gradient(135deg, #1a3d44, #1a4f5a)',
         avatar: 'avatars/scientificnotation.png',
-        link: '科学计数法/scientificnotation.html',
+        link: '科学计数法/index.html',
     },
     {
         id: 3,
@@ -25,12 +23,11 @@ const works = [
         category: 'web',
         desc: '一组实用的在线小工具集合，包含颜色选择器、闲鱼税计算、数字转换等工具。以及标题生成器、扫雷等小游戏。',
         fullDesc: 'Material 小工具系列，收录了多个日常实用的小工具，点击下方任意按钮即可跳转到对应页面体验。',
-        gradient: 'linear-gradient(135deg, #3d2a5c, #5c3d6e)',
         avatar: 'avatars/materials.png',
         links: [
-            { name: '颜色选择器', url: 'material小工具系列/colorpicker.html' },
-            { name: '闲鱼税计算', url: 'material小工具系列/goofishtax.html' },
-            { name: '数字转换', url: 'material小工具系列/numconvert.html' },
+            { name: '颜色选择器', url: 'material/colorpicker.html' },
+            { name: '闲鱼税计算', url: 'material/goofishtax.html' },
+            { name: '数字转换', url: 'material/numconvert.html' },
         ],
     },
     {
@@ -39,7 +36,6 @@ const works = [
         category: 'Python',
         desc: 'Verity是国外博主ThatMob视频中的原创角色，由爱好者将其制作成模组。通过这个工具可以让Verity模组调用国内ai平台。',
         fullDesc: '由于中国网络限制，可能无法访问ollama或者groq，这个工具将国内ai平台的api包装成Verity模组可调用的接口，方便国内玩家使用。工具特色：可以选择六种国内ai平台，包括通义千问，智谱，字节跳动豆包，DeepSeek，MiniMax。选择后，输入模型名称以及密钥，即可点击开始运行。上次输入的模型名称以及密钥会记录进ini，下一次启动时会自动填充。同时，工具不仅可以供Verity模组调用，还可以让别的软件使用，例如使用curl命令行调用，或者在Python中调用。',
-        gradient: 'linear-gradient(135deg, #2a7c8c, #19a7a7)',
         avatar: 'avatars/veritymod.png',
         link: 'verity/main.py',
     }
@@ -50,6 +46,7 @@ var coverflowWorks = [];
 var isDragging = false;
 var dragStartX = 0;
 var dragDeltaX = 0;
+var wheelTimer = null;
 
 function renderGallery(filter) {
     filter = filter || 'all';
@@ -67,7 +64,7 @@ function renderGallery(filter) {
     coverflowWorks.forEach(function(w, i) {
         html += '<div class="coverflow-card-wrapper" data-index="' + i + '">' +
             '<div class="card" data-id="' + w.id + '">' +
-                '<div class="card-image" style="background: ' + w.gradient + '">' +
+                '<div class="card-image">' +
                     '<img class="img-bg" src="' + w.avatar + '" alt="' + w.title + '">' +
                     '<span class="card-tag">' + getCategoryLabel(w.category) + '</span>' +
                 '</div>' +
@@ -258,6 +255,26 @@ function attachCoverflowEvents() {
         dragDeltaX = 0;
         setTimeout(function() { isDragging = false; }, 0);
     });
+
+    var container = stage.parentElement;
+
+    function handleWheel(e) {
+        e.preventDefault();
+        if (wheelTimer) return;
+        wheelTimer = setTimeout(function() {
+            wheelTimer = null;
+        }, 10);
+        if (e.deltaY > 0) {
+            navigateCoverflow(1);
+        } else {
+            navigateCoverflow(-1);
+        }
+    }
+
+    stage.addEventListener('wheel', handleWheel, { passive: false });
+    if (container) {
+        container.addEventListener('wheel', handleWheel, { passive: false });
+    }
 }
 
 function getCategoryLabel(cat) {
@@ -281,7 +298,7 @@ function openModal(id) {
     }
 
     content.innerHTML =
-        '<div style="background: ' + w.gradient + '; height: 200px; border-radius: 12px; margin-bottom: 20px; overflow: hidden;">' +
+        '<div style="height: 200px; border-radius: 12px; margin-bottom: 20px; overflow: hidden;">' +
             '<img src="' + w.avatar + '" alt="' + w.title + '" style="width: 100%; height: 100%; object-fit: cover; display: block;">' +
         '</div>' +
         '<span class="modal-tag">' + getCategoryLabel(w.category) + '</span>' +
