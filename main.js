@@ -1,6 +1,13 @@
 const works = [
     {
-        id: 1,
+        title: '无亚像素图片查看器',
+        category: 'Python',
+        desc: '屏幕上每一个像素都严格对应原图真实像素，绝不出现插值算出来的亚像素。',
+        fullDesc: '一个用Python写的图片查看器，从算法层面和显示链路层面双重杜绝亚像素渲染。缩放倍率只能是整数或整数的倒数，同时通过Win32 API声明DPI感知，确保1个图像像素=1个物理像素。支持放大/缩小查看、鼠标拖拽、滚轮缩放，并提供屏幕像素验证工具。',
+        avatar: 'avatars/nosubpixel.png',
+        link: 'nosubpixel/viewer.py',
+    },
+    {
         title: 'LaTeX图像生成器',
         category: 'web',
         desc: '把latex的图形玩出花来',
@@ -9,7 +16,6 @@ const works = [
         link: 'https://latex.ias1054.cn',
     },
     {
-        id: 2,
         title: '科学计数法转完整数字',
         category: 'web',
         desc: '将科学计数法表示的数字转换为完整数字。',
@@ -18,7 +24,6 @@ const works = [
         link: '科学计数法/index.html',
     },
     {
-        id: 3,
         title: 'Google Material风格小工具系列',
         category: 'web',
         desc: '一组实用的在线小工具集合，包含颜色选择器、闲鱼税计算、数字转换等工具。以及标题生成器、扫雷等小游戏。',
@@ -31,7 +36,6 @@ const works = [
         ],
     },
     {
-        id: 4,
         title: 'Minecraft Verity模组的API包装工具',
         category: 'Python',
         desc: 'Verity是国外博主ThatMob视频中的原创角色，由爱好者将其制作成模组。通过这个工具可以让Verity模组调用国内ai平台。',
@@ -72,7 +76,7 @@ function renderGallery(filter) {
 
     coverflowWorks.forEach(function(w, i) {
         html += '<div class="coverflow-card-wrapper" data-index="' + i + '">' +
-            '<div class="card" data-id="' + w.id + '">' +
+            '<div class="card" data-index="' + i + '">' +
                 '<div class="card-image">' +
                     '<img class="img-bg" src="' + w.avatar + '" alt="' + w.title + '">' +
                     '<span class="card-tag">' + getCategoryLabel(w.category) + '</span>' +
@@ -202,8 +206,8 @@ function attachCoverflowEvents() {
         var index = parseInt(wrapper.dataset.index);
         if (index === coverflowIndex) {
             var card = wrapper.querySelector('.card');
-            var id = parseInt(card.dataset.id);
-            openModal(id);
+            var index = parseInt(card.dataset.index);
+            openModal(index);
         } else {
             coverflowIndex = index;
             scheduleUpdateCoverflow();
@@ -337,8 +341,8 @@ function getCategoryLabel(cat) {
     return map[cat] || cat;
 }
 
-function openModal(id) {
-    var w = works.find(function(w) { return w.id === id; });
+function openModal(index) {
+    var w = coverflowWorks[index];
     if (!w) return;
     var overlay = document.getElementById('modalOverlay');
     var content = document.getElementById('modalContent');
