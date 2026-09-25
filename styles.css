@@ -144,9 +144,9 @@ body {
 .coverflow-card-wrapper {
     position: absolute;
     width: 340px;
-    transition: all 0.55s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: transform 0.55s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.55s cubic-bezier(0.23, 1, 0.32, 1);
     transform-style: preserve-3d;
-    will-change: transform;
+    will-change: transform, opacity;
 }
 
 .coverflow-card-wrapper .card {
@@ -242,7 +242,7 @@ body {
     border: 1px solid var(--border);
     border-radius: 16px;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s, box-shadow 0.3s;
     cursor: pointer;
     position: relative;
     animation: fadeInUp 0.5s ease both;

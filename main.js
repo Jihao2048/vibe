@@ -1,7 +1,7 @@
 const works = [
     {
         id: 1,
-        title: 'LaTeX公式生成器',
+        title: 'LaTeX图像生成器',
         category: 'web',
         desc: '把latex的图形玩出花来',
         fullDesc: '你们不是喜欢和DeepSeek调情吗？客户端里面自带了latex图形渲染器，大家都想做出一个特别的聊天框来。今天让你们动动手指就能做出好看的消息框。',
@@ -47,6 +47,15 @@ var isDragging = false;
 var dragStartX = 0;
 var dragDeltaX = 0;
 var wheelTimer = null;
+var cfRafId = null;
+var cfPending = false;
+var cfWrappers = null;
+var cfDots = null;
+var cfPrevBtn = null;
+var cfNextBtn = null;
+var hoverRafId = null;
+var dragMoveHandler = null;
+var dragUpHandler = null;
 
 function renderGallery(filter) {
     filter = filter || 'all';
@@ -88,17 +97,36 @@ function renderGallery(filter) {
     });
     document.getElementById('coverflowDots').innerHTML = dotsHtml;
 
+    cfWrappers = document.querySelectorAll('.coverflow-card-wrapper');
+    cfDots = document.querySelectorAll('.coverflow-dot');
+    cfPrevBtn = document.querySelector('.coverflow-nav.prev');
+    cfNextBtn = document.querySelector('.coverflow-nav.next');
+
     attachCoverflowEvents();
-    updateCoverflow();
+    scheduleUpdateCoverflow();
+}
+
+function scheduleUpdateCoverflow() {
+    if (cfPending) return;
+    cfPending = true;
+    if (cfRafId) cancelAnimationFrame(cfRafId);
+    cfRafId = requestAnimationFrame(function() {
+        cfPending = false;
+        cfRafId = null;
+        updateCoverflow();
+    });
 }
 
 function updateCoverflow() {
-    var wrappers = document.querySelectorAll('.coverflow-card-wrapper');
-    var dots = document.querySelectorAll('.coverflow-dot');
-    var prevBtn = document.querySelector('.coverflow-nav.prev');
-    var nextBtn = document.querySelector('.coverflow-nav.next');
+    var wrappers = cfWrappers;
+    var dots = cfDots;
+    var prevBtn = cfPrevBtn;
+    var nextBtn = cfNextBtn;
 
-    wrappers.forEach(function(wrapper, i) {
+    if (!wrappers || !wrappers.length) return;
+
+    for (var i = 0; i < wrappers.length; i++) {
+        var wrapper = wrappers[i];
         var offset = i - coverflowIndex;
         var t = getCardTransform(offset);
 
@@ -114,15 +142,17 @@ function updateCoverflow() {
         } else {
             wrapper.classList.remove('active');
         }
-    });
+    }
 
-    dots.forEach(function(dot, i) {
-        if (i === coverflowIndex) {
-            dot.classList.add('active');
-        } else {
-            dot.classList.remove('active');
+    if (dots) {
+        for (var j = 0; j < dots.length; j++) {
+            if (j === coverflowIndex) {
+                dots[j].classList.add('active');
+            } else {
+                dots[j].classList.remove('active');
+            }
         }
-    });
+    }
 
     if (prevBtn) prevBtn.style.visibility = coverflowIndex === 0 ? 'hidden' : 'visible';
     if (nextBtn) nextBtn.style.visibility = coverflowIndex === coverflowWorks.length - 1 ? 'hidden' : 'visible';
@@ -148,33 +178,52 @@ function navigateCoverflow(direction) {
     var newIndex = coverflowIndex + direction;
     if (newIndex >= 0 && newIndex < coverflowWorks.length) {
         coverflowIndex = newIndex;
-        updateCoverflow();
+        scheduleUpdateCoverflow();
     }
 }
 
+var lastHoveredCard = null;
+
 function attachCoverflowEvents() {
     var stage = document.getElementById('coverflowStage');
-    var wrappers = document.querySelectorAll('.coverflow-card-wrapper');
+    if (!stage) return;
 
-    wrappers.forEach(function(wrapper, i) {
-        wrapper.addEventListener('click', function(e) {
-            if (isDragging) {
-                e.preventDefault();
-                return;
-            }
-            if (i === coverflowIndex) {
-                var card = wrapper.querySelector('.card');
-                var id = parseInt(card.dataset.id);
-                openModal(id);
-            } else {
-                coverflowIndex = i;
-                updateCoverflow();
-            }
-        });
+    var prevBtn = cfPrevBtn;
+    var nextBtn = cfNextBtn;
+    var dots = cfDots;
 
-        wrapper.addEventListener('mousemove', function(e) {
-            if (i !== coverflowIndex) return;
+    stage.addEventListener('click', function(e) {
+        if (isDragging) {
+            e.preventDefault();
+            return;
+        }
+        var wrapper = e.target.closest('.coverflow-card-wrapper');
+        if (!wrapper) return;
+        var index = parseInt(wrapper.dataset.index);
+        if (index === coverflowIndex) {
             var card = wrapper.querySelector('.card');
+            var id = parseInt(card.dataset.id);
+            openModal(id);
+        } else {
+            coverflowIndex = index;
+            scheduleUpdateCoverflow();
+        }
+    });
+
+    stage.addEventListener('mousemove', function(e) {
+        if (hoverRafId) return;
+        hoverRafId = requestAnimationFrame(function() {
+            hoverRafId = null;
+            var wrapper = e.target.closest('.coverflow-card-wrapper');
+            var card = null;
+            if (wrapper && parseInt(wrapper.dataset.index) === coverflowIndex) {
+                card = wrapper.querySelector('.card');
+            }
+            if (lastHoveredCard && lastHoveredCard !== card) {
+                lastHoveredCard.style.transform = '';
+            }
+            lastHoveredCard = card;
+            if (!card) return;
             var rect = card.getBoundingClientRect();
             var xRatio = (e.clientX - rect.left) / rect.width;
             var yRatio = (e.clientY - rect.top) / rect.height;
@@ -182,52 +231,63 @@ function attachCoverflowEvents() {
             var rotateX = (0.5 - yRatio) * 15;
             card.style.transform = 'perspective(1200px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateZ(20px)';
         });
-
-        wrapper.addEventListener('mouseleave', function() {
-            if (i !== coverflowIndex) return;
-            var card = wrapper.querySelector('.card');
-            card.style.transform = 'none';
-        });
     });
 
-    var prevBtn = document.querySelector('.coverflow-nav.prev');
-    var nextBtn = document.querySelector('.coverflow-nav.next');
+    stage.addEventListener('mouseleave', function() {
+        if (hoverRafId) {
+            cancelAnimationFrame(hoverRafId);
+            hoverRafId = null;
+        }
+        if (lastHoveredCard) {
+            lastHoveredCard.style.transform = '';
+            lastHoveredCard = null;
+        }
+    });
+
     if (prevBtn) prevBtn.addEventListener('click', function(e) { e.stopPropagation(); navigateCoverflow(-1); });
     if (nextBtn) nextBtn.addEventListener('click', function(e) { e.stopPropagation(); navigateCoverflow(1); });
 
-    var dots = document.querySelectorAll('.coverflow-dot');
-    dots.forEach(function(dot, i) {
-        dot.addEventListener('click', function() {
-            coverflowIndex = i;
-            updateCoverflow();
-        });
-    });
+    if (dots) {
+        for (var d = 0; d < dots.length; d++) {
+            (function(idx) {
+                dots[idx].addEventListener('click', function() {
+                    coverflowIndex = idx;
+                    scheduleUpdateCoverflow();
+                });
+            })(d);
+        }
+    }
 
     stage.addEventListener('mousedown', function(e) {
         isDragging = false;
         dragStartX = e.clientX;
         dragDeltaX = 0;
-    });
 
-    document.addEventListener('mousemove', function(e) {
-        if (dragStartX === 0) return;
-        dragDeltaX = e.clientX - dragStartX;
-        if (Math.abs(dragDeltaX) > 5) {
-            isDragging = true;
-        }
-    });
-
-    document.addEventListener('mouseup', function() {
-        if (isDragging && Math.abs(dragDeltaX) > 50) {
-            if (dragDeltaX > 0) {
-                navigateCoverflow(-1);
-            } else {
-                navigateCoverflow(1);
+        dragMoveHandler = function(e) {
+            if (dragStartX === 0) return;
+            dragDeltaX = e.clientX - dragStartX;
+            if (Math.abs(dragDeltaX) > 5) {
+                isDragging = true;
             }
-        }
-        dragStartX = 0;
-        dragDeltaX = 0;
-        setTimeout(function() { isDragging = false; }, 0);
+        };
+        dragUpHandler = function() {
+            if (isDragging && Math.abs(dragDeltaX) > 50) {
+                if (dragDeltaX > 0) {
+                    navigateCoverflow(-1);
+                } else {
+                    navigateCoverflow(1);
+                }
+            }
+            dragStartX = 0;
+            dragDeltaX = 0;
+            setTimeout(function() { isDragging = false; }, 0);
+            document.removeEventListener('mousemove', dragMoveHandler);
+            document.removeEventListener('mouseup', dragUpHandler);
+            dragMoveHandler = null;
+            dragUpHandler = null;
+        };
+        document.addEventListener('mousemove', dragMoveHandler);
+        document.addEventListener('mouseup', dragUpHandler);
     });
 
     stage.addEventListener('touchstart', function(e) {
@@ -256,14 +316,12 @@ function attachCoverflowEvents() {
         setTimeout(function() { isDragging = false; }, 0);
     });
 
-    var container = stage.parentElement;
-
     function handleWheel(e) {
         e.preventDefault();
         if (wheelTimer) return;
         wheelTimer = setTimeout(function() {
             wheelTimer = null;
-        }, 10);
+        }, 600);
         if (e.deltaY > 0) {
             navigateCoverflow(1);
         } else {
@@ -272,9 +330,6 @@ function attachCoverflowEvents() {
     }
 
     stage.addEventListener('wheel', handleWheel, { passive: false });
-    if (container) {
-        container.addEventListener('wheel', handleWheel, { passive: false });
-    }
 }
 
 function getCategoryLabel(cat) {
