@@ -325,7 +325,7 @@ function attachCoverflowEvents() {
         if (wheelTimer) return;
         wheelTimer = setTimeout(function() {
             wheelTimer = null;
-        }, 600);
+        }, 20);
         if (e.deltaY > 0) {
             navigateCoverflow(1);
         } else {
